@@ -3,6 +3,7 @@ import "keen-slider/keen-slider.min.css"
 import { HomeContainer, Product } from "@/styles/pages/home"
 
 import { GetStaticProps } from "next"
+import { Handbag } from "phosphor-react"
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
@@ -22,7 +23,7 @@ interface HomeProps {
 export default function Home({ products }: HomeProps) {
     const [sliderRef] = useKeenSlider({
         slides: {
-            perView: 3,
+            perView: 2,
             spacing: 48,
         },
     })
@@ -50,8 +51,12 @@ export default function Home({ products }: HomeProps) {
                             />
 
                             <footer>
-                                <strong>{product.name}</strong>
-                                <span>{product.price}</span>
+                                <div>
+                                    <strong>{product.name}</strong>
+                                    <span>{product.price}</span>
+                                </div>
+
+                                <Handbag size={24} />
                             </footer>
                         </Product>
                     </Link>

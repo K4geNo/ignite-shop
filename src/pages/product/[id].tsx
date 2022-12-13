@@ -48,6 +48,7 @@ export default function Product({ product }: ProductProps) {
             <Head>
                 <title>Product | Ignite Shop</title>
             </Head>
+
             <ProductContainer>
                 <ImageContainer>
                     <Image
