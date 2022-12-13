@@ -1,10 +1,13 @@
 import { CartButtonContainer } from "./styles"
+import { ComponentProps } from "react"
 import { Handbag } from "phosphor-react"
 
-export function CartButton() {
+type CartButtonProps = ComponentProps<typeof CartButtonContainer>
+
+export function CartButton({ ...rest }: CartButtonProps) {
     return (
-        <CartButtonContainer>
-            <Handbag size={24} weight="bold" />
+        <CartButtonContainer {...rest}>
+            <Handbag weight="bold" />
         </CartButtonContainer>
     )
 }

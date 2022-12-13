@@ -46,6 +46,7 @@ export const Product = styled("div", {
         div: {
             display: "flex",
             flexDirection: "column",
+            gap: 4,
         },
 
         strong: {

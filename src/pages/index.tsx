@@ -2,6 +2,7 @@ import "keen-slider/keen-slider.min.css"
 
 import { HomeContainer, Product } from "@/styles/pages/home"
 
+import { CartButton } from "@/components/CartButton"
 import { GetStaticProps } from "next"
 import { Handbag } from "phosphor-react"
 import Head from "next/head"
@@ -56,7 +57,7 @@ export default function Home({ products }: HomeProps) {
                                     <span>{product.price}</span>
                                 </div>
 
-                                <Handbag size={24} />
+                                <CartButton color="green" size="large" />
                             </footer>
                         </Product>
                     </Link>
