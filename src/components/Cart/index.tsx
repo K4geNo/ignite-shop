@@ -13,8 +13,39 @@ import {
 import { CartButton } from "../CartButton"
 import Image from "next/image"
 import { X } from "phosphor-react"
+import axios from "axios"
+import { useCart } from "@/hooks/useCart"
+import { useState } from "react"
 
 export function Cart() {
+    const { cartItems, removeProductFromCart, cartTotal } = useCart()
+
+    const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] =
+        useState(false)
+
+    const cartQuantity = cartItems.length
+
+    const cartTotalFormatted = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+    }).format(cartTotal)
+
+    async function handleCheckout() {
+        try {
+            setIsCreatingCheckoutSession(true)
+
+            const response = await axios.post("/api/checkout", {
+                products: cartItems,
+            })
+
+            const { checkoutUrl } = response.data
+
+            window.location.href = checkoutUrl
+        } catch (error) {
+            alert("Erro ao realizar checkout. Tente novamente.")
+        }
+    }
+
     return (
         <Dialog.Root>
             <Dialog.Trigger asChild>
@@ -30,40 +61,58 @@ export function Cart() {
                     <h2>Sacola de compras</h2>
 
                     <section>
-                        {/* <p>Seu carrinho está vazio</p> */}
+                        {cartQuantity <= 0 && <p>Seu carrinho está vazio.</p>}
 
-                        <CartProduct>
-                            <CardProductImage>
-                                <Image
-                                    src="https://s3-alpha-sig.figma.com/img/387d/13ce/de131bd1ccf9bbe6b2331e88d3df20cd?Expires=1672012800&Signature=AHopghausC0rJfV3jgbRMMX9Ec87ND3quYJZxPKI6jA~--Jff1ASeE~LfWDsPpFXI18mFxNC5aEgfDFPC35W3-q8XqD53lMik9Z8jtnHT3eRhDxRQeKOXJURw8JMPW3elOYGizZjFNFzGdi-PCEoTeg5ER5CdupLCFK50qDMwCI28vxEStOgzq9d-w6cR1HKdg1eZ14N5dWHhmcfEw0OKCXqe1Hpc9PGqJDLEjdNhgjC6Ir24-2E9iOnzo~4qIDnC2fAehB1z8GMRaPwedJQTFOI5J8N6bLo1KuPQNhJNUu64fvGHRsezFe5ACpVIGkob9dR6D6s9h0vDK68e7TzSQ__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4"
-                                    width={100}
-                                    height={93}
-                                    alt=""
-                                />
-                            </CardProductImage>
+                        {cartItems.map((product) => (
+                            <CartProduct key={product.id}>
+                                <CardProductImage>
+                                    <Image
+                                        src={product.imageUrl}
+                                        width={100}
+                                        height={93}
+                                        alt=""
+                                    />
+                                </CardProductImage>
 
-                            <CartProductDetails>
-                                <p>Produto X</p>
+                                <CartProductDetails>
+                                    <p>{product.name}</p>
 
-                                <strong>R$ 50,99</strong>
+                                    <strong>{product.price}</strong>
 
-                                <button>Remover</button>
-                            </CartProductDetails>
-                        </CartProduct>
+                                    <button
+                                        onClick={() =>
+                                            removeProductFromCart(product.id)
+                                        }
+                                    >
+                                        Remover
+                                    </button>
+                                </CartProductDetails>
+                            </CartProduct>
+                        ))}
                     </section>
 
                     <CartFooter>
                         <CartFooterDetails>
                             <div>
                                 <span>Quantidade</span>
-                                <p>2 itens</p>
+                                <p>
+                                    {cartQuantity}{" "}
+                                    {cartQuantity === 1 ? "item" : "itens"}
+                                </p>
                             </div>
                             <div>
                                 <span>Valor total</span>
-                                <p>R$ 100,00</p>
+                                <p>{cartTotalFormatted}</p>
                             </div>
                         </CartFooterDetails>
-                        <button>Finalizar Compra</button>
+                        <button
+                            onClick={handleCheckout}
+                            disabled={
+                                isCreatingCheckoutSession || cartQuantity <= 0
+                            }
+                        >
+                            Finalizar Compra
+                        </button>
                     </CartFooter>
                 </CartContent>
             </Dialog.Portal>

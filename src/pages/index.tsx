@@ -1,24 +1,21 @@
 import "keen-slider/keen-slider.min.css"
 
 import { HomeContainer, Product } from "@/styles/pages/home"
+import { MouseEvent, useEffect, useState } from "react"
 
 import { CartButton } from "@/components/CartButton"
 import { GetStaticProps } from "next"
-import { Handbag } from "phosphor-react"
 import Head from "next/head"
+import { IProduct } from "@/contexts/CartContext"
 import Image from "next/image"
 import Link from "next/link"
 import Stripe from "stripe"
 import { stripe } from "@/lib/stripe"
+import { useCart } from "@/hooks/useCart"
 import { useKeenSlider } from "keen-slider/react"
 
 interface HomeProps {
-    products: {
-        id: string
-        name: string
-        imageUrl: string
-        price: string
-    }[]
+    products: IProduct[]
 }
 
 export default function Home({ products }: HomeProps) {
@@ -28,6 +25,19 @@ export default function Home({ products }: HomeProps) {
             spacing: 48,
         },
     })
+
+    const [isLoading, setIsLoading] = useState(true)
+
+    const { addToCart, checkIfProductExistsInCart } = useCart()
+
+    function handleAddToCart(
+        e: MouseEvent<HTMLButtonElement>,
+        product: IProduct
+    ) {
+        e.preventDefault()
+
+        addToCart(product)
+    }
 
     return (
         <>
@@ -57,7 +67,14 @@ export default function Home({ products }: HomeProps) {
                                     <span>{product.price}</span>
                                 </div>
 
-                                <CartButton color="green" size="large" />
+                                <CartButton
+                                    color="green"
+                                    size="large"
+                                    onClick={(e) => handleAddToCart(e, product)}
+                                    disabled={checkIfProductExistsInCart(
+                                        product.id
+                                    )}
+                                />
                             </footer>
                         </Product>
                     </Link>
@@ -83,6 +100,8 @@ export const getStaticProps: GetStaticProps = async () => {
                 style: "currency",
                 currency: "BRL",
             }).format(price.unit_amount! / 100),
+            numberPrice: price.unit_amount! / 100,
+            defaultPriceId: price.id,
         }
     })
 

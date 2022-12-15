@@ -1,14 +1,22 @@
 import { Cart } from "../Cart"
 import { HeaderContainer } from "./styles"
 import Image from "next/image"
+import Link from "next/link"
 import logoImg from "@/assets/logo.svg"
+import { useRouter } from "next/router"
 
 export function Header() {
+    const { pathname } = useRouter()
+
+    const showCartButton = pathname !== "/success"
+
     return (
         <HeaderContainer>
-            <Image src={logoImg} alt="" />
+            <Link href="/">
+                <Image src={logoImg} alt="" />
+            </Link>
 
-            <Cart />
+            {showCartButton && <Cart />}
         </HeaderContainer>
     )
 }
